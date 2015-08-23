@@ -1,0 +1,24 @@
+{
+  "subst": {
+    "Code": "\\begin{hscode}\\SaveRestoreHook\n",
+    "EndCode": "\\ColumnHook\n\\end{hscode}\\resethooks\n",
+    "Column": "\\column{^1}{^2}%\n",
+    "LeftColumn": "@{}>{\\hspre}l<{\\hspost}@{}",
+    "CenterColumn": "@{}>{\\hspre}c<{\\hspost}@{}",
+    "FromTo": "\\>[^1]{} ^3 {}\\<[^2]%\n",
+    "LineBreak": "\\\\\n",
+    "Space": "\\;",
+    "Debug": "\\iffalse ^1 \\fi",
+
+    "Keyword": "\\Keyword{^1}",
+    "KeywordType": "\\Type{^1}",
+    "Name": "\\Name{^1}",
+    "LiteralString": "\\String{^1}",
+    "LiteralNumber": "\\Number{^1}",
+    "Operator": "\\Operator{^1}",
+    "Punctuation": "\\Punctuation{^1}",
+    "Comment": "\\Comment{^1}",
+
+    "Indent": "\\Indent{^1}"
+  }
+}

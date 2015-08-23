@@ -1,0 +1,10 @@
+{
+  "renderers": {
+    "haskell": "literate.renderer.haskell.HaskellRenderer",
+    "scala": "literate.renderer.scala.ScalaRenderer"
+  },
+  "delimiters": {
+    "begin": "\\begin{code}",
+    "end": "\\end{code}"
+  }
+}
