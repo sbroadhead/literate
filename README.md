@@ -25,3 +25,4 @@ to install it. This installs a `lit` command line utility.
 | `--config CONFIG` | Load an additional JSON config file. |
 | `--format LANG=FILENAME` | Load an additional format file (in JSON format`) for the specified language. |  
 
+<img src="https://rawgit.com/sbroadhead/literate/master/example.png">
