@@ -10,6 +10,14 @@ I wrote this for my Masters thesis and it works exactly as well as I needed it t
 
 Built-in support is included for Haskell and Scala code. Other languages will require a new `literate.renderer.Renderer` subclass, which generally will also require writing a `literate.renderer.Spacer` subclass along with coming up with an algorithm to determine token spacing.
 
+By default code blocks are delimited like
+
+  \begin{code}{lang=haskell}
+  module MyCode where
+  
+  -- ...
+  \end{code}
+
 Use
 
     python setup.py install
