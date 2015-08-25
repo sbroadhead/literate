@@ -12,11 +12,12 @@ Built-in support is included for Haskell and Scala code. Other languages will re
 
 By default code blocks are delimited like
 
+  ```
   \begin{code}{lang=haskell}
   module MyCode where
-  
   -- ...
   \end{code}
+  ```
 
 Use
 
