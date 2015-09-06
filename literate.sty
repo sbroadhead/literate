@@ -17,11 +17,11 @@
   \global\let\SaveRestoreHook\empty
   \global\let\ColumnHook\empty}
 \newcommand*{\savecolumns}[1][default]%
-  {\g@@addto@@macro\SaveRestoreHook{\savecolumns[#1]}}
+  {\g@addto@macro\SaveRestoreHook{\savecolumns[#1]}}
 \newcommand*{\restorecolumns}[1][default]%
-  {\g@@addto@@macro\SaveRestoreHook{\restorecolumns[#1]}}
+  {\g@addto@macro\SaveRestoreHook{\restorecolumns[#1]}}
 \newcommand*{\aligncolumn}[2]%
-  {\g@@addto@@macro\ColumnHook{\column{#1}{#2}}}
+  {\g@addto@macro\ColumnHook{\column{#1}{#2}}}
 
 \resethooks
 \def\tt{\ttfamily}

@@ -1,6 +1,7 @@
 {
   "format": {
     "->": { "to": "\\to" },
+    "=>": { "to": "\\Rightarrow" },
     "<-": { "to": "\\leftarrow" },
     "$": { "to": "\\mathbin{\\$}" },
     "\\": { "to": "\\lambda", "if": ["Token.Operator", "Token.Name", "Token.Keyword"] },
@@ -11,7 +12,7 @@
     "..": { "to": "\\mathinner{\\ldotp\\ldotp}" },
     "~": { "to": "\\mathord{\\sim}" },
     "@": { "to": "\\mathord{@}" },
-    ".": { "to": "\\mathbin{\\circ}" },
+    ".": { "to": "\\mathbin{\\circ}", "if": ["Token.Operator"] },
     "!!": { "to": "\\mathbin{!!}" },
     "^": { "to": "\\mathbin{\\uparrow}" },
     "^^": { "to": "\\mathbin{\\uparrow\\uparrow}" },
@@ -31,6 +32,7 @@
     ">=": { "to": "\\geq" },
     "`elem`": { "to": "\\in" },
     "`notElem`": { "to": "\\notin" },
+    "forall": { "to": "\\forall" },
     "&&": { "to": "\\mathrel{\\wedge}" },
     "||": { "to": "\\mathrel{\\vee}" },
     ">>": { "to": "\\sequ" },

@@ -15,6 +15,11 @@ class Sub(object):
     def __repr__(self):
         return "<Sub(id={}, args={})>".format(repr(self.id), repr(self.args))
 
+    def __eq__(self, other):
+        if not isinstance(other, Sub):
+            return False
+        return other.id == self.id and other.args == self.args
+
 
 class Tok(object):
     def __init__(self, type, value, row, col, aligned=False):
@@ -106,8 +111,26 @@ class PolyTableRenderer(Renderer):
         raise NotImplementedError()
 
     def column_spec(self, token_stream):
-        """Return the column alignment specifications for the given token stream."""
-        return dict((c, Sub('LeftColumn')) for c in token_stream.aligned_cols)
+        """
+        Get the column specification.
+        """
+        spec = {}
+
+        def should_center_column(cells):
+            has_op = False
+            for cell in cells:
+                if len(cell) > 1:
+                    return False
+                if cell[0].type in Token.Operator:
+                    has_op = True
+            return has_op
+
+        for c in token_stream.aligned_cols:
+            if should_center_column(token_stream.get_column_contents(c)):
+                spec[c] = Sub('CenterColumn')
+            else:
+                spec[c] = Sub('LeftColumn')
+        return spec
 
     def get_token_stream(self, code_region):
         """
@@ -150,7 +173,7 @@ class PolyTableRenderer(Renderer):
                 yield tok
         return TokStream(_generator())
 
-    def transform(self, token_stream):
+    def transform(self, token_stream, gobble=None):
         """
         Transform the input token stream and intersperse instances of Sub
         throughout it, representing substitution tokens. The return value of
@@ -158,7 +181,7 @@ class PolyTableRenderer(Renderer):
         code fences) except for substitution of the tokens.
         """
         out = []
-        gobble = token_stream.gobble_size
+        gobble = gobble if gobble is not None else token_stream.gobble_size
         col_specs = self.column_spec(token_stream)
         indent = 0
 
@@ -185,8 +208,8 @@ class PolyTableRenderer(Renderer):
                 if indent:
                     buffer = [Sub('Indent', indent)]
                 continue
-            buffer.append(tok)
-            #buffer.append(Sub('Debug', str(tok.type)))
+            if not tok.is_whitespace():
+                buffer.append(tok)
         if buffer:
             out.append(Sub('FromTo', aligncol, 'E', buffer))
         out.append(Sub('EndCode'))
@@ -207,9 +230,9 @@ class PolyTableRenderer(Renderer):
         """
         def subarg(arg):
             if isinstance(arg, Sub):
-                return ''.join(self.substitute(arg))
+                return ' '.join(self.substitute(arg))
             elif hasattr(arg, '__iter__'):
-                return ''.join([''.join(self.substitute(s)) for s in arg])
+                return ' '.join([' '.join(self.substitute(s)) for s in arg])
             return str(arg)
 
         if isinstance(sub, Sub):
@@ -224,21 +247,27 @@ class PolyTableRenderer(Renderer):
             if sub.is_whitespace():
                 return [' ']
             value = utils.latex_escape(sub.value)
+            subbed = False
             if sub.value in self.format.format:
                 opt = self.format.format[sub.value]
                 if not opt['if'] or any(sub.type in string_to_tokentype(tt) for tt in opt['if']):
                     value = opt['to']
+                    subbed = True
             tok_types = map(lambda x: str(x).replace('.', '')[5:], reversed(sub.type.split()))
             found = [y for y in tok_types if y in self.format.subst]
-            if found:
-                result = ''.join(self.substitute(Sub(found[0], value)))
+            if found and not subbed:
+                result = ' '.join(self.substitute(Sub(found[0], value)))
                 return [result]
             return [value]
         return [str(sub)]
 
     def render(self, code_region):
         token_stream = self.get_token_stream(code_region)
-        transformed = self.transform(token_stream)
+        if 'gobble' not in code_region.options:
+            gobble = None
+        else:
+            gobble = int(code_region.options['gobble'])
+        transformed = self.transform(token_stream, gobble)
         transformed = self.pre_substitute_hook(transformed)
         substituted = ' '.join(''.join(self.substitute(t)) for t in transformed)
         return str(substituted)

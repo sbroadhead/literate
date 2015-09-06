@@ -1,3 +1,4 @@
+import re
 from pygments.token import Token
 from literate.renderer.poly import Tok, Sub
 
@@ -8,12 +9,29 @@ class Spacer(object):
     spaces out the tokens within columns (FromTo substitution tokens).
     """
 
+    @classmethod
+    def space_info(cls):
+        return {}
+
     def consume(self, token, state):
         """
         Consume one token in the given state and return a list of tokens to
         emit along with a new state.
         """
-        raise NotImplementedError()
+        info = self.space_info()
+
+        if not isinstance(token, Tok):
+            return [token], state
+        if not state:
+            return [token], token
+
+        for before, afters in info.iteritems():
+            if re.match(before, state.value):
+                for after in afters:
+                    if re.match(after, token.value):
+                        return [Sub('Space'), token], token
+        return [token], token
+
 
     @classmethod
     def respace(cls, buffer):

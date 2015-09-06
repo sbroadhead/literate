@@ -1,8 +1,8 @@
 import unittest
-from pygments.token import Token
+
 from literate import Corpus
 from literate.renderer.haskell import HaskellRenderer
-from literate.renderer.poly import Tok
+from literate.renderer.poly import Sub
 
 latex = r"""
 Foobar
@@ -15,6 +15,7 @@ Foobar
 \end{code}
 """
 
+
 class PolyTests(unittest.TestCase):
     def setUp(self):
         self.renderer = HaskellRenderer()
@@ -25,7 +26,6 @@ class PolyTests(unittest.TestCase):
     def test_columns(self):
         expected = {4, 6, 8, 11, 16, 20}
         found = set()
-
 
         for tok in self.tok_stream:
             if tok.aligned:
@@ -43,6 +43,9 @@ class PolyTests(unittest.TestCase):
         self.assertEqual([['x'], ['0'], ['x']], col_toks(11))
         self.assertEqual([['::'], ['='], ['='], ['=']], col_toks(16))
         self.assertEqual([['Int', '->', 'Int'], ['f', 'x'], ['0'], ['2', '*', '(', 'foo', 'x', ')']], col_toks(20))
+
+        spec = self.renderer.column_spec(self.tok_stream)
+        self.assertEqual(Sub('CenterColumn'), spec[16])
 
     def test_replace(self):
         self.assertIn('\\to', self.corpus.render())
