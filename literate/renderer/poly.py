@@ -173,7 +173,7 @@ class PolyTableRenderer(Renderer):
                 yield tok
         return TokStream(_generator())
 
-    def transform(self, token_stream, gobble=None):
+    def transform(self, token_stream, gobble, begin, end):
         """
         Transform the input token stream and intersperse instances of Sub
         throughout it, representing substitution tokens. The return value of
@@ -185,7 +185,7 @@ class PolyTableRenderer(Renderer):
         col_specs = self.column_spec(token_stream)
         indent = 0
 
-        out.append(Sub('Code'))
+        out.append(Sub(begin))
         out.append(Sub('Column', '0', Sub('LeftColumn')))
         for col in token_stream.aligned_cols:
             out.append(Sub('Column', col, col_specs[col]))
@@ -210,9 +210,10 @@ class PolyTableRenderer(Renderer):
                 continue
             if not tok.is_whitespace():
                 buffer.append(tok)
+                buffer.append(Sub('Debug', tok.type))
         if buffer:
             out.append(Sub('FromTo', aligncol, 'E', buffer))
-        out.append(Sub('EndCode'))
+        out.append(Sub(end))
         return out
 
     def pre_substitute_hook(self, buffer):
@@ -267,7 +268,9 @@ class PolyTableRenderer(Renderer):
             gobble = None
         else:
             gobble = int(code_region.options['gobble'])
-        transformed = self.transform(token_stream, gobble)
+        begin_code = code_region.options.get('begin') or 'Code'
+        end_code = code_region.options.get('end') or 'EndCode'
+        transformed = self.transform(token_stream, gobble, begin_code, end_code)
         transformed = self.pre_substitute_hook(transformed)
         substituted = ' '.join(''.join(self.substitute(t)) for t in transformed)
         return str(substituted)

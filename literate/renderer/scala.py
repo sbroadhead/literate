@@ -12,20 +12,31 @@ from literate.renderer.spacer import Spacer
 class ScalaSpacer(Spacer):
     @classmethod
     def space_info(cls):
-        text = r'(?:\w|\d)(?:\w|\d|[.])*'
-        return {
-            text: [text],
-            r'[:,;]': [r'.*'],
-        }
+        # Note this is not *nearly* comprehensive, i just hacked this up to make
+        # my own thesis look correct
+        text = r'[a-zA-Z0-9_][a-zA-Z0-9_]*'
+        return [
+            (text, [text, r'\{']),
+            (r'[:,;{&|]', [r'.*']),
+            (r'[\)\]]', [r'(?![,.()\[\]:*/<>]|=>)']),
+            (r'<:', [r'.*']),
+            (r'>:', [r'.*']),
+            (r'.*', [r'\}', r'<:', r'>:'])
+        ]
 
 
 class ScalaRenderer(PolyTableRenderer):
     def create_lexer(self):
-        return ScalaLexer()
+        from literate.utils import TokenMergeFilter
+        l = ScalaLexer()
+        l.add_filter(TokenMergeFilter(merge_types=[Whitespace, String]))
+        return l
 
     def pre_substitute_hook(self, buffer):
         # We use this to correct token spacing
         return ScalaSpacer.respace(buffer)
+
+
 
 
 #
@@ -162,7 +173,8 @@ class ScalaLexer(RegexLexer):
     tokens = {
         'root': [
             # method names
-            (r'(class|trait|object)(\s+)', bygroups(Keyword, Text), 'class'),
+            (r'(class|trait)(\s+)', bygroups(Keyword, Text), 'class'),
+            (r'(object)(\s+)', bygroups(Keyword, Text), 'object'),
             (u"'%s" % idrest, Text.Symbol),
             (r'[^\S\n]+', Text),
             (r'//.*?\n', Comment.Single),
@@ -203,6 +215,18 @@ class ScalaLexer(RegexLexer):
              bygroups(Name.Class, Text, Operator), 'typeparam'),
             (u'[ \t]+', Text),
             (r'\n', Text, '#pop'),
+            (r'extends', Keyword, '#pop'),
+            (r'\{', Operator, '#pop'),
+            (r'\(', Operator, '#pop'),
+            (r'//.*?\n', Comment.Single, '#pop'),
+            (u'%s|%s|`[^`]+`' % (idrest, op), Name.Class, '#pop'),
+        ],
+        'object': [
+            (u'(%s|%s|`[^`]+`)(\\s*)(\\[)' % (idrest, op),
+             bygroups(Name, Text, Operator), 'typeparam'),
+            (u'[ \t]+', Text),
+            (r'\n', Text, '#pop'),
+            (r'extends', Keyword, '#pop'),
             (r'\{', Operator, '#pop'),
             (r'\(', Operator, '#pop'),
             (r'//.*?\n', Comment.Single, '#pop'),

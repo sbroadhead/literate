@@ -1,7 +1,7 @@
 {
   "subst": {
-    "Code": "\\begin{hscode}\\SaveRestoreHook\n",
-    "EndCode": "\\ColumnHook\n\\end{hscode}\\resethooks\n",
+    "Code": "\\begin{mycode}\\SaveRestoreHook\n",
+    "EndCode": "\\ColumnHook\n\\end{mycode}\\resethooks\n",
     "Column": "\\column{^1}{^2}%\n",
     "LeftColumn": "@{}>{\\hspre}l<{\\hspost}@{}",
     "CenterColumn": "@{}>{\\hspre}c<{\\hspost}@{}",
@@ -13,6 +13,7 @@
     "Keyword": "\\Keyword{^1}",
     "KeywordType": "\\Type{^1}",
     "Name": "\\Name{^1}",
+    "NameClass": "\\Type{^1}",
     "LiteralString": "\\String{^1}",
     "LiteralNumber": "\\Number{^1}",
     "Operator": "\\Operator{^1}",

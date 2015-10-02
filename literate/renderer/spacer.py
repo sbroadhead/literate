@@ -25,7 +25,7 @@ class Spacer(object):
         if not state:
             return [token], token
 
-        for before, afters in info.iteritems():
+        for before, afters in info:
             if re.match(before, state.value):
                 for after in afters:
                     if re.match(after, token.value):

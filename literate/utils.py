@@ -1,6 +1,7 @@
 from importlib import import_module
 import json
 import os
+from pygments.filter import Filter
 
 
 def latex_escape(text):
@@ -36,3 +37,28 @@ def load_json(filename, module=False):
         filename = os.path.join(os.path.dirname(__file__), os.path.join('..', filename))
     with open(filename) as f:
         return json.load(f)
+
+
+class TokenMergeFilter(Filter):
+    """Merges consecutive tokens with the same token type in the output
+    stream of a lexer.
+
+    .. versionadded:: 1.2
+    """
+    def __init__(self, **options):
+        Filter.__init__(self, **options)
+
+    def filter(self, lexer, stream):
+        current_type = None
+        current_value = None
+        merge_types = self.options.get('merge_types') or []
+        for ttype, value in stream:
+            if ttype is current_type and (not merge_types or ttype in merge_types):
+                current_value += value
+            else:
+                if current_type is not None:
+                    yield current_type, current_value
+                current_type = ttype
+                current_value = value
+        if current_type is not None:
+            yield current_type, current_value

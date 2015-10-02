@@ -9,10 +9,11 @@ class HaskellSpacer(Spacer):
     @classmethod
     def space_info(cls):
         text = r'(?:\w|\d)(?:\w|\d|[.])*'
-        return {
-            text: [r'[\(\[\{]', text],
-            r'[,)}\]]': [r'.*']
-        }
+        return [
+            (text, [r'[\(\[\{\'\"]', text]),
+            (r'[,)}\]]', [r'.*']),
+            (r'".*"', [text])
+        ]
 
 
 class HaskellRenderer(PolyTableRenderer):
